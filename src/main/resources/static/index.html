@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+</head>
+<body>
+    <form id="chatForm">
+        <input type="text" id="messageInput" placeholder="Enter message" required />
+        <button type="submit" id="submitBtn">Submit</button>
+    </form>
+
+    <h3>Response:</h3>
+    <pre id="responseOutput"></pre>
+
+    <script>
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const responseOutput = document.getElementById('responseOutput');
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            submitBtn.disabled = true;
+            responseOutput.textContent = 'Loading...';
+
+            try {
+                const res = await fetch(`/chat?message=${encodeURIComponent(message)}`);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                const data = await res.text();
+                responseOutput.textContent = data;
+            } catch (err) {
+                responseOutput.textContent = 'Error: ' + err.message;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
